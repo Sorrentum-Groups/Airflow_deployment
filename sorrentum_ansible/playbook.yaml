@@ -1,0 +1,54 @@
+---
+- name: Setup Docker and Run Scripts on Ubuntu Server
+  hosts: web
+  become: yes
+  gather_facts: yes
+  tasks:
+    - name: Update APT package manager repositories
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker's stable repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x,o+x'
+
+    - name: Add exception to Git safe.directory configuration
+      shell:
+        cmd: git config --global --add safe.directory /home/ansible/surrentum_project
+
+    - name: Set a new URL for origin 
+      shell:
+        cmd: git remote set-url origin https://github.com/sorrentum/sorrentum.git
+              
+    - name: Clone Git Repository
+      git:
+        repo: https://github.com/sorrentum/sorrentum.git
+        dest: /home/ansible/surrentum_project
+        clone: yes
+        update: yes
+
+    - name: Run shell script
+      shell: /home/ansible/ansible.sh
+      args:
+        chdir: /home/ansible
