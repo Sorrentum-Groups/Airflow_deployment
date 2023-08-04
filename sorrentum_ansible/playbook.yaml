@@ -85,6 +85,18 @@
       debug:
         msg: "{{ s_user }}" 
 
+    - name: Install pip
+      apt:
+        name: python3-pip
+        state: present
+      become: true
+
+    - name: Install Docker Python module
+      pip:
+        name: docker
+        executable: pip3
+      become: true
+
     - name: Spin up Airflow with Docker Compose
       community.docker.docker_compose:
         project_src: /home/ansible/Airflow_deployment/sorrentum_sandbox1/devops
