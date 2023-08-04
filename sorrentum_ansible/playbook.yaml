@@ -8,28 +8,33 @@
     s_user: "airflow_prod"
   gather_facts: yes
   tasks:
-    - name: Update APT package manager repositories
+    - name: Update apt cache 
       apt:
         update_cache: yes
 
     - name: Install required packages
       apt:
-        name: 
+        name: "{{ packages }}"
+      vars:
+        packages:      
           - apt-transport-https
           - ca-certificates
           - curl
           - software-properties-common
-        state: present
-
+    
     - name: Add Docker's official GPG key
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
 
     - name: Add Docker's stable repository
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
-        state: present
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: latest    
 
     - name: Install Docker Compose
       get_url:
@@ -97,22 +102,18 @@
         executable: pip3
       become: true
 
-    - name: Spin up Airflow with Docker Compose
-      community.docker.docker_compose:
-        project_src: /home/ansible/Airflow_deployment/sorrentum_sandbox1/devops
-        state: present
-      register: output
-      
-    - name: Show output
-      debug:
-        var: output
-
+    - name: Install docker-compose Python module
+      pip:
+        name: docker-compose  
+        executable: pip3
+      become: true
+ 
     - name: Pause for a while to let Airflow containers start
       pause:
         minutes: 2
 
     - name: Initialize a default user
-      command: ./init_airflow_setup.sh
+      command: /home/ansible/Airflow_deployment/sorrentum_sandbox1/devops/init_airflow_setup.sh
       args:
         chdir: /home/ansible/Airflow_deployment/sorrentum_sandbox1/devops
 
