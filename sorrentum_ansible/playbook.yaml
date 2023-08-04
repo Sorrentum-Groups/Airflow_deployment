@@ -33,7 +33,7 @@
         dest: /usr/local/bin/docker-compose
         mode: 'u+x,g+x,o+x'
 
-    - name: Set safe.directory
+    - name: Set safe directory
       become: yes
     #  become_user: ansible
       shell: git config --global --add safe.directory /home/ansible/Airflow_deployment 
@@ -42,7 +42,7 @@
 
     - name:
       git:
-        repo: git@github.com:Sorrentum-Groups/Airflow_deployment.git
+        repo: https://github.com/Sorrentum-Groups/Airflow_deployment.git
         dest: /home/ansible/Airflow_deployment 
         clone: yes
         update: yes
