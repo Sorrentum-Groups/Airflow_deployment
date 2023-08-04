@@ -2,6 +2,9 @@
 - name: Setup Docker and Run Scripts on Ubuntu Server
   hosts: web
   become: yes
+  vars:
+    user: "ses-smtp-user.airflow_prod"
+    s_user: "airflow_prod"
   gather_facts: yes
   tasks:
     - name: Update APT package manager repositories
@@ -75,4 +78,5 @@
 
     - name: Show user
       debug:
-        var: user 
+        msg: "{{ user }}"
+        msgs: "{{ s_user }}" 
