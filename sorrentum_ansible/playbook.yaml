@@ -33,22 +33,32 @@
         dest: /usr/local/bin/docker-compose
         mode: 'u+x,g+x,o+x'
 
-    - name: Add exception to Git safe.directory configuration
-      shell:
-        cmd: git config --global --add safe.directory /home/ansible/surrentum_project
+    - name: Set safe.directory
+      become: yes
+    #  become_user: ansible
+      shell: git config --global --add safe.directory /home/ansible/surrentum_project/sorrentum
+      args:
+         warn: no    
 
-    - name: Set a new URL for origin 
-      shell:
-        cmd: git remote set-url origin https://github.com/sorrentum/sorrentum.git
-              
-    - name: Clone Git Repository
+    - name:
       git:
         repo: https://github.com/sorrentum/sorrentum.git
-        dest: /home/ansible/surrentum_project
+        dest: /home/ansible/surrentum_project/sorrentum
         clone: yes
         update: yes
 
-    - name: Run shell script
-      shell: /home/ansible/ansible.sh
-      args:
-        chdir: /home/ansible
+    - name: Execute a script
+      shell: sh /home/ansible/Airflow_deployment/sorrentum_ansible/ansible.sh
+
+    - name: Check if SES SMTP user exists
+      command: aws iam get-user --user-name ses-smtp-user.airflow_prod
+      register: user
+      ignore_errors: True
+
+    - name: Show user
+      debug:
+        var: user
+
+    - name: Create user if it does not exist
+      command: aws iam create-user --user-name ses-smtp-user.airflow_prod
+      when: user is failed 
