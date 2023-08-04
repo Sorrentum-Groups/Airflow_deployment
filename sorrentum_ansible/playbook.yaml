@@ -73,11 +73,6 @@
     - name: Run AWS CLI installer
       command: sudo /tmp/aws/install --update
 
-    - name: Check if SES SMTP user exists
-      command: aws iam get-user --user-name bola
-      register: user
-      ignore_errors: True
-
     - name: Show user
       debug:
         var: user 
