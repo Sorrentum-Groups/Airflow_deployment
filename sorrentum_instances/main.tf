@@ -18,7 +18,7 @@ resource "aws_instance" "sorrentum_instance" {
   count                  = 1
   vpc_security_group_ids = [aws_security_group.sg_sorrentum.id]
   key_name               = "my_devops_acct_key"
-  # user_data = file("myshcj.sh")
+  user_data = file("./ansible-install.sh")
 
   tags = {
     Name = "sorrentum_server"
