@@ -2,6 +2,7 @@
 - name: Setup Docker and Run Scripts on Ubuntu Server
   hosts: web
   become: yes
+  become_method: sudo
   vars:
     user: "ses-smtp-user.airflow_prod"
     s_user: "airflow_prod"
@@ -83,3 +84,30 @@
     - name: Show user
       debug:
         msg: "{{ s_user }}" 
+
+    - name: Spin up Airflow with Docker Compose
+      community.docker.docker_compose:
+        project_src: /home/ansible/Airflow_deployment/sorrentum_sandbox1/devops
+        state: present
+      register: output
+      
+    - name: Show output
+      debug:
+        var: output
+
+    - name: Pause for a while to let Airflow containers start
+      pause:
+        minutes: 2
+
+    - name: Initialize a default user
+      command: ./init_airflow_setup.sh
+      args:
+        chdir: /home/ansible/Airflow_deployment/sorrentum_sandbox1/devops
+
+    - name: Change the default login credentials
+      shell: |
+        docker exec -it airflow_cont \
+        bash -c airflow users change-password --username emeka --password Sexywunmi123
+      args:
+        executable: /bin/bash
+         
