@@ -74,7 +74,7 @@
       command: sudo /tmp/aws/install --update
 
     - name: Check if SES SMTP user exists
-      command: aws iam get-user --user-name ses-smtp-user.airflow_prod
+      command: aws iam get-user --user-name bola
       register: user
       ignore_errors: True
 
