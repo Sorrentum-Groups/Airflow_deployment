@@ -80,8 +80,4 @@
 
     - name: Show user
       debug:
-        var: user
-
-    - name: Create user if it does not exist
-      command: aws iam create-user --user-name ses-smtp-user.airflow_prod
-      when: user is failed 
+        var: user 
