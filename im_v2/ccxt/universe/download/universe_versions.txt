@@ -1,0 +1,72 @@
+v7.5
+- 2023-06-20
+- Test extend binance up to 100 new symbols
+
+v7
+- 2023-05-25
+- Delete XRP_USDT from the binanceus universe due it is no longer supported
+
+v7.4
+- 2023-04-11
+- Added universe for kraken
+
+v7.3
+- 2023-03-19
+- Removed XRP_USDT from binance US, since it is not supported
+
+v7.3
+- 2023-03-03
+- #CmTask3917 next symbols were deleted from binance:
+  - "ETH_BUSD"
+  - "BTC_BUSD"
+
+v7.3
+- 2023-02-15
+- Added universe for okx
+
+v7
+- 2023-02-07
+- Added universe for binance US
+- the list is shorter than for binance.common
+- because some pairs are not available in US
+
+- 2022-08-05
+- Only `binance` futures
+- Same coins as in `binance` in the `download` universe `top30_20220706`
+- `binance::ADA_USDT` was removed due to CmTask2375
+- Updated snapshot at `20220805`
+
+top30_20220706
+- 2022-07-07
+- Universe with coinmarketcap's top 30 perpetual futures contracts
+
+coinbase_test
+- 2022-06-15
+- Coinbasepro universe for unit tests
+
+v5
+- 2022-05-25
+- Coinbase, Kucoin, Gateio are added due to CmTask #1948
+
+- 2022-06-09
+- Coinbasepro is added due to CmTask #1995
+
+v4
+- 2022-04-29
+- Gateio, Kucoin are removed due to CmTask #1710
+
+small
+- 2021-11-07
+- Small universe for fast unit tests
+
+v3
+- 2021-11-04
+- CDD is removed due to CmTask324
+
+v2
+- 2021-11-03
+- CCXT-Bitfinex is removed due to CmTask274
+
+v1
+- 2021-09-25
+- Initial version
