@@ -79,4 +79,7 @@
     - name: Show user
       debug:
         msg: "{{ user }}"
+
+    - name: Show user
+      debug:
         msg: "{{ s_user }}" 
