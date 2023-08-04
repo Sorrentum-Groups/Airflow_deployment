@@ -36,14 +36,14 @@
     - name: Set safe.directory
       become: yes
     #  become_user: ansible
-      shell: git config --global --add safe.directory /home/ansible/surrentum_project/sorrentum
+      shell: git config --global --add safe.directory /home/ansible/Airflow_deployment 
       args:
          warn: no    
 
     - name:
       git:
-        repo: https://github.com/sorrentum/sorrentum.git
-        dest: /home/ansible/surrentum_project/sorrentum
+        repo: git@github.com:Sorrentum-Groups/Airflow_deployment.git
+        dest: /home/ansible/Airflow_deployment 
         clone: yes
         update: yes
 
