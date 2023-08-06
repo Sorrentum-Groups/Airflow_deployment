@@ -1,0 +1,136 @@
+---
+- name: Setup Docker and Run Docker compose to run Airflow on Ubuntu Server
+  hosts: web
+  become: yes
+  become_method: sudo
+  vars:
+    user: "ses-smtp-user.airflow_prod"
+    s_user: "airflow_prod"
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+  gather_facts: yes
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name: "{{ packages }}"
+
+    - name: Set hostname
+      command: hostnamectl set-hostname sorrentum_airfl
+
+    - name: add ubuntu to sudoers file
+      command: echo "ubuntu  ALL=(ALL) NOPASSWD:AnoLL" | sudo tee /etc/sudoers.d/ubuntu
+
+    - name: Create directory and initialize git
+      become_user: ubuntu
+      command:
+        cmd: "{{ item }}"
+        chdir: /home/ubuntu
+      loop:
+        - mkdir -p sor_eme
+        - git init sor_eme
+
+    - name: Disable ufw
+      ufw:
+        state: disabled
+
+    - name: Export AIRFLOW_UID
+      become_user: ubuntu
+      shell: echo 'export AIRFLOW_UID=$(id -u)' >> /home/ubuntu/.bashrc
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        id: 7EA0A9C3F273FCD8
+        state: present
+
+    - name: Add Docker's stable repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: latest
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x,o+x'
+
+    - name: Set safe directory
+      become: yes
+      shell: git config --global --add safe.directory /home/ubuntu/sor_eme
+      args:
+         warn: no
+
+    - name: git
+      git:
+        repo: https://github.com/sorrentum/sorrentum.git
+        dest: /home/ubuntu/sor_eme
+        clone: yes
+        update: yes
+
+    - name: Update apt package database
+      apt:
+        update_cache: yes
+
+    - name: Install unzip is needed to install AWScli
+      apt:
+        name: unzip
+        state: present
+
+    - name: Download AWS CLI
+      get_url:
+        url: https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip
+        dest: /tmp/awscliv2.zip
+
+    - name: Unzip AWS CLI
+      unarchive:
+        src: /tmp/awscliv2.zip
+        dest: /tmp
+        remote_src: yes
+
+    - name: Run AWS CLI installer
+      command: sudo /tmp/aws/install --update
+
+    - name: Show user
+      debug:
+        msg: "{{ user }}"
+
+    - name: Show user
+      debug:
+        msg: "{{ s_user }}" 
+
+    # - name: Install necessary packages for pip3
+    #   apt:
+    #     name: 
+    #       - python3-pip
+    #       - python3-setuptools
+    #       - python3-wheel
+    #     state: present
+    #     update_cache: yes              
+
+    - name: Install Docker Python module
+      pip:
+        name: docker
+        executable: pip3
+      become: true
+
+    - name: Start Airflow using Docker Compose
+      command:
+        cmd: docker-compose up -d
+        chdir: /home/ubuntu/sor_eme/sorrentum/sorrentum_sandbox/devops/
+
+    - name: Run init_airflow_setup.sh to initialize a default user
+      ansible.builtin.shell: /home/ubuntu/sor_eme/sorrentum/sorrentum_sandbox/devops/init_airflow_setup.sh    
