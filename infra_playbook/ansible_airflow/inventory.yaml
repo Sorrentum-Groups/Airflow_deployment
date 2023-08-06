@@ -1,0 +1,2 @@
+[web]
+54.175.233.225 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/ansible_airflow/my_devops_acct_key.pem                                                                                                                 

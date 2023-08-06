@@ -1,0 +1,102 @@
+#Airflow Deploment on AWS EC2 Server::::::::
+
+
+Workspace :
+  This refers to your computer or a server from where you will configure and deploy the said task
+
+Target Server:
+  This refers to the remote computer or remote server where you will run the Airflow.
+
+Pre-requesite for this deployment:
+
+You will need to install Ansible, Terraform, and AWS CLI on your Workspace, if you dont have them runing already.
+    (i). Ansible will be used to configure and run the playbook
+    (ii). Terraform for the provisioning the taget server
+    (iii) AWSCLI for creating access to the AWS cloud because we will be using some aws cloud resource for this deployment
+
+On the Target Server you to also have prerequisit runing too but that will be done using you ansible playbook so you need to set ansible up first.
+    (i). Docker and docker-Compose
+    (ii). git and also initialize the working directory
+    (iii). patch the target server
+
+   You can download and installthem from the following links:
+
+       Ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
+       Terraform: https://learn.hashicorp.com/tutorials/terraform/install-cli
+       AWS CLI: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
+
+Step One : 
+    Configure AWS CLI
+        Create a user and grant him permission according to his job spec.( in most cases Admin will create user with required permission for you )
+        Run aws configure command and provide your AWS Access Key ID, Secret Access Key, default region name, and default output format when prompted. 
+        This sets up your AWS credentials for Terraform to use.
+
+step two:
+    provision the Target Server With Terraform Template
+    create your terraform files:
+    - main.tf
+    - variable.tf
+    - terraform.tfvars
+    
+    Provisioning the instnce steps
+     create the provider aws
+      -   (See AWS Documentation for guidiance)
+
+     create the backend for the terraform state file aws_s3
+      -   (See AWS Documentation for guidiance)
+
+     make sure you have aws cli well configured
+      -    (See AWS Documentation for guidiance)
+
+     Write a terraform template for ec2 instance
+      -    (See terraform.io for guidiance)
+
+     Run the terraform init command to initialize Terraform
+      -    (In your terminal, navigate to the directory containing your main.tf and run terraform init. 
+            This will initialize your Terraform project and download the necessary provider plugins.)
+
+     Validate the terraform codes written
+      -     (run 'terraform validate', this will validate the code of any syntax error )
+
+     Run the terraform apply to provision the Ec2 instance
+      -     (Run terraform apply. Terraform will show you what resources it plans to create. 
+             Type yes when prompted to confirm the creation of these resources.)
+
+
+step three:
+    
+   Ansibe will be used to configure on the remote server provisioned using terraform in step two
+   Ansible Pre-requisits needed for configuration
+
+     Inventory file   #all files will be in yaml e.g inventory.yaml
+     -     contains the hostip / dns, host user name and path /to /the /aws/ ssh key
+     -     to create and inventory file please visit the ansible documentation page
+
+     Playbook file
+     -      This is where the main instructions that will run on the target machine is writting and this determined 
+            by the task discription or the job spec.
+     -      to create and playbook file please visit the ansible documentation page  
+
+     Make sure ansible is installed on your workspace and configure with the remote server using the ssh agent
+     -      you can run the  " eval ssh-agent -s  ---> ssh-add your/ssh/key --> ssh-add -l
+     -      copy your inventory file and paste it on the ansible host  " /etc/ansible/hosts "
+     -      configure the /etc/ansible/ansible.cfg file @ line 89 set it to default
+
+     You can now run your Ansible playbook with the command ansible-playbook -i inventory.yaml playbook.yml. 
+     if you have already provisioned and configured on your playbook with : 
+     -    docker and docker-compose
+     -    set the environmental variables as required
+     -    set your posgres user and password
+     -    set up the stmp for emails ( see aws documentation for guide) 
+     -    git and cloning of the airflow repos 
+     -    docker-compose up -d 
+     -    docker-compose init
+     The ansible-playbook will install Docker, Docker Compose and all that is configured 
+     on the target server and start Airflow using Docker Compose on the new EC2 instance.
+
+     Note: Before you start, ensure you have necessary permissions and security groups set up in AWS for accessibility and security. 
+     Your security groups should allow SSH and TCP traffic on the ports that Airflow will use. 
+     Also, you might need to adjust these steps according to your environment and security requirements
+
+     
+   
